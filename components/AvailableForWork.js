@@ -15,7 +15,7 @@ const AvailableForWork = ({ variant = "default" }) => {
         description:
           "I specialize in building scalable web and mobile applications using modern technologies. My expertise includes Node.js, Nest.js for robust backend development, React and Next.js for dynamic frontend experiences, and React Native for cross-platform mobile applications.",
         aboutButton: "About Me",
-        aboutLink: "/02_about",
+        aboutLink: "/hakkimda",
         imageSrc: "images/misc/profile.webp",
         counterColor: "color",
       },
@@ -25,7 +25,7 @@ const AvailableForWork = ({ variant = "default" }) => {
         description:
           "Modern teknolojiler kullanarak ölçeklenebilir web ve mobil uygulamalar geliştirme konusunda uzmanım. Node.js ve Nest.js ile sağlam backend geliştirme, React ve Next.js ile dinamik frontend deneyimleri, React Native ile platformlar arası mobil uygulamalar geliştiriyorum.",
         aboutButton: "Hakkımda",
-        aboutLink: "/02_about",
+        aboutLink: "/hakkimda",
         imageSrc: "images/misc/profile.webp",
         counterColor: "color",
       },

@@ -53,7 +53,7 @@ const Footer = ({ footerShape = false }) => {
               </div>
             </div>
             <div className="col-lg-6 text-lg-end">
-              <Link href="/02_contact">
+              <Link href="/iletisim">
                 <h2
                   className="fs-84 fw-800 pe-3 shuffle wow fadeInLeft"
                   data-wow-delay=".3s"

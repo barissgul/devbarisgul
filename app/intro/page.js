@@ -12,7 +12,7 @@ const demoData = [
   },
   {
     id: "2",
-    href: "/02_index",
+    href: "/",
     title: "Main Demo Light",
     images: ["02_index", "02_works", "02_about"],
   },

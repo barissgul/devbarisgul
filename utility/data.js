@@ -43,11 +43,11 @@ export const rootElements = {
 
 export const menus = {
   home2: [
-    { id: 1, href: "/02_index", text: "Home" },
-    { id: 2, href: "/02_about", text: "About Me" },
-    { id: 3, href: "/02_services", text: "What I Do" },
-    { id: 4, href: "/02_works", text: "Works" },
-    { id: 6, href: "/02_contact", text: "Hire Me" },
+    { id: 1, href: "/", text: "Home" },
+    { id: 2, href: "/hakkimda", text: "About Me" },
+    { id: 3, href: "/ne-yapiyorum", text: "What I Do" },
+    { id: 4, href: "/projeler", text: "Works" },
+    { id: 6, href: "/iletisim", text: "Hire Me" },
   ],
   home3: [
     { id: 1, href: "/03_index", text: "Home" },
