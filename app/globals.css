@@ -389,6 +389,79 @@ img.mfp-img {
   padding: 0 15px;
 }
 
+/* Mobil header menü - hamburger ile açılır, menü ekrana sığar */
+.d-menu-1-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.d-menu-1-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--title-font-color, #151515);
+}
+.d-menu-1-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: currentColor;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.dark-scheme .d-menu-1-hamburger {
+  color: #fff;
+}
+@media (max-width: 991px) {
+  .d-menu-1-hamburger {
+    display: flex;
+  }
+  .d-menu-1-list {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    padding-top: 1rem;
+    padding-left: 0;
+    list-style: none;
+    margin: 0;
+  }
+  .d-menu-1.mobile-menu-open .d-menu-1-list {
+    display: flex;
+  }
+  .d-menu-1-list li {
+    display: block !important;
+    margin-right: 0 !important;
+    margin-bottom: 0.25rem;
+  }
+  .d-menu-1-list li a {
+    display: block;
+    padding: 0.5rem 0;
+  }
+  .d-menu-1.mobile-menu-open .d-menu-1-hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .d-menu-1.mobile-menu-open .d-menu-1-hamburger span:nth-child(2) {
+    opacity: 0;
+  }
+  .d-menu-1.mobile-menu-open .d-menu-1-hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+@media (min-width: 992px) {
+  .d-menu-1-hamburger {
+    display: none !important;
+  }
+}
+
 /* Sabit dil seçici - her cihazda (mobil dahil) ekran köşesinde görünür */
 .floating-lang-switcher {
   position: fixed;

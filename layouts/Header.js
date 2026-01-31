@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const translations = {
   en: {
@@ -32,6 +32,7 @@ const Header = ({
   extraClass = "",
 }) => {
   const { language } = useLanguage();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getLabel = (text) => {
     return translations[language]?.[text] ?? text;
@@ -49,9 +50,20 @@ const Header = ({
   }, [language, menus]);
 
   return (
-    <div className={`d-menu-1 wow ${extraClass}`} data-wow-delay=".3s">
-      <div className="d-flex justify-content-between align-items-center gap-3">
-        <ul className="mb-0">
+    <div className={`d-menu-1 wow ${extraClass} ${mobileMenuOpen ? "mobile-menu-open" : ""}`} data-wow-delay=".3s">
+      <div className="d-menu-1-inner">
+        <button
+          type="button"
+          className="d-menu-1-hamburger"
+          onClick={() => setMobileMenuOpen((o) => !o)}
+          aria-expanded={mobileMenuOpen}
+          aria-label={mobileMenuOpen ? "Menüyü kapat" : "Menüyü aç"}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        <ul className="mb-0 d-menu-1-list">
           {menus.map((item, index) => (
             <li
               key={index}
@@ -59,8 +71,9 @@ const Header = ({
                 item.id
               }`}
             >
-              <Link 
+              <Link
                 href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
                 data-text={
                   activePage === (item.href === "/" ? "home" : item.href.slice(1))
                     ? (item.href === "/" ? getLabel("Home") : getLabel(item.text))
