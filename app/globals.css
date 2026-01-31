@@ -389,31 +389,71 @@ img.mfp-img {
   padding: 0 15px;
 }
 
-/* Mobilde dil çevirme butonlarının görünür olması */
-.d-menu-1 > .d-flex {
-  flex-wrap: wrap;
-  row-gap: 0.75rem;
+/* Sabit dil seçici - her cihazda (mobil dahil) ekran köşesinde görünür */
+.floating-lang-switcher {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  gap: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  /* Mobil notch / güvenli alan */
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
 }
-.header-lang-switcher {
-  flex-shrink: 0;
-}
-@media (max-width: 991px) {
-  .d-menu-1 > .d-flex {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .header-lang-switcher {
-    width: 100%;
-    justify-content: flex-end;
-    margin-top: 0.25rem;
-  }
+.floating-lang-btn {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  transition: background 0.2s, color 0.2s;
+  /* Mobilde dokunma alanı en az 44px */
 }
 @media (max-width: 576px) {
-  .d-menu-1 ul {
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  .floating-lang-btn {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.9rem;
+    font-size: 1rem;
   }
-  .d-menu-1 li {
-    margin-right: 0.75rem !important;
-  }
+}
+.floating-lang-btn:first-child {
+  border-radius: 9999px 0 0 9999px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+.floating-lang-btn:last-child {
+  border-radius: 0 9999px 9999px 0;
+}
+.floating-lang-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+.floating-lang-btn.active {
+  background: var(--primary-color, #0d6efd);
+  color: #fff;
+}
+.light-scheme .floating-lang-switcher {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+.light-scheme .floating-lang-btn {
+  background: rgba(255, 255, 255, 0.95);
+  color: #151515;
+}
+.light-scheme .floating-lang-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #151515;
+}
+.light-scheme .floating-lang-btn.active {
+  background: var(--primary-color, #0d6efd);
+  color: #fff;
 }

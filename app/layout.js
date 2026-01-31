@@ -8,6 +8,7 @@ import "./globals.css";
 
 import { Inter } from "next/font/google";
 import Preloader from "@/layouts/Preloader";
+import FloatingLangSwitcher from "@/components/FloatingLangSwitcher";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
       <body >
         <LanguageProvider>
           <Preloader />
+          <FloatingLangSwitcher />
           {children}
         </LanguageProvider>
       </body>

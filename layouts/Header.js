@@ -31,7 +31,7 @@ const Header = ({
   ],
   extraClass = "",
 }) => {
-  const { language, changeLanguage } = useLanguage();
+  const { language } = useLanguage();
 
   const getLabel = (text) => {
     return translations[language]?.[text] ?? text;
@@ -81,26 +81,6 @@ const Header = ({
             </li>
           ))}
         </ul>
-        <div className="d-flex align-items-center gap-1 header-lang-switcher flex-shrink-0">
-          <button
-            type="button"
-            className={`btn btn-sm ${
-              language === "tr" ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={() => changeLanguage("tr")}
-          >
-            TR
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${
-              language === "en" ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={() => changeLanguage("en")}
-          >
-            EN
-          </button>
-        </div>
       </div>
     </div>
   );
