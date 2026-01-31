@@ -81,7 +81,7 @@ const Header = ({
             </li>
           ))}
         </ul>
-        <div className="d-flex align-items-center gap-1">
+        <div className="d-flex align-items-center gap-1 header-lang-switcher flex-shrink-0">
           <button
             type="button"
             className={`btn btn-sm ${
