@@ -99,7 +99,8 @@ export async function POST(request) {
     const code = err?.code || "";
     console.error("Contact form error:", code, msg, err);
     const isDev = process.env.NODE_ENV === "development";
-    const userMessage = isDev
+    const showDetail = isDev || process.env.CONTACT_DEBUG === "true";
+    const userMessage = showDetail
       ? `E-posta gönderilemedi: ${msg}${code ? ` (${code})` : ""}`
       : "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.";
     return NextResponse.json(
