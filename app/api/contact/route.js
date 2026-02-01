@@ -4,7 +4,7 @@ import path from "path";
 import { readFileSync, existsSync } from "fs";
 import net from "net";
 
-const TO_EMAIL = "info@devbarisgul.com";
+const TO_EMAIL_DEFAULT = "site@devbarisgul.com";
 
 function sendPlainSMTP(options) {
   return new Promise((resolve, reject) => {
@@ -108,6 +108,7 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+    const toEmail = process.env.CONTACT_TO_EMAIL || TO_EMAIL_DEFAULT;
     const hasSmtp =
       process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
     if (!hasSmtp) {
@@ -171,15 +172,15 @@ export async function POST(request) {
         port: Number(process.env.SMTP_PORT) || 587,
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
-        from: process.env.SMTP_FROM || process.env.SMTP_USER || TO_EMAIL,
-        to: TO_EMAIL,
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || toEmail,
+        to: toEmail,
         subject,
         text: textBody,
       });
     } else {
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER || TO_EMAIL,
-      to: TO_EMAIL,
+      from: process.env.SMTP_FROM || process.env.SMTP_USER || toEmail,
+      to: toEmail,
       replyTo: email.trim(),
       subject,
       text: [
