@@ -1,7 +1,30 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import path from "path";
+import { readFileSync, existsSync } from "fs";
 
 const TO_EMAIL = "info@devbarisgul.com";
+
+function loadEnvLocal() {
+  try {
+    const dir = process.cwd();
+    const envLocalPath = path.join(dir, ".env.local");
+    if (existsSync(envLocalPath)) {
+      const content = readFileSync(envLocalPath, "utf8");
+      for (const line of content.split("\n")) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith("#")) {
+          const eq = trimmed.indexOf("=");
+          if (eq > 0) {
+            const key = trimmed.slice(0, eq).trim();
+            const value = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
+            if (!process.env[key]) process.env[key] = value;
+          }
+        }
+      }
+    }
+  } catch (_) {}
+}
 
 export async function POST(request) {
   try {
@@ -15,6 +38,9 @@ export async function POST(request) {
       );
     }
 
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      loadEnvLocal();
+    }
     const hasSmtp =
       process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
     if (!hasSmtp) {
@@ -30,10 +56,14 @@ export async function POST(request) {
       );
     }
 
+    const port = Number(process.env.SMTP_PORT) || 587;
+    const useSecure = process.env.SMTP_SECURE === "true";
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === "true",
+      port,
+      secure: useSecure,
+      requireTLS: !useSecure && port === 587,
+      tls: { rejectUnauthorized: false },
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -65,9 +95,15 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("Contact form error:", err);
+    const msg = err?.message || String(err);
+    const code = err?.code || "";
+    console.error("Contact form error:", code, msg, err);
+    const isDev = process.env.NODE_ENV === "development";
+    const userMessage = isDev
+      ? `E-posta gönderilemedi: ${msg}${code ? ` (${code})` : ""}`
+      : "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.";
     return NextResponse.json(
-      { error: "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin." },
+      { error: userMessage },
       { status: 500 }
     );
   }
