@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import FitParentTitle from "@/components/FitParentTitle";
 import Header from "@/layouts/Header";
 import NathanLayout from "@/layouts/NathanLayout";
@@ -7,6 +8,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const page = () => {
   const { language } = useLanguage();
+  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+  const [errorDetail, setErrorDetail] = useState("");
 
   const content = {
     en: {
@@ -73,6 +76,35 @@ const page = () => {
                   className="position-relative z1000"
                   method="post"
                   action="#"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    const name = form.Name?.value?.trim();
+                    const email = form.Email?.value?.trim();
+                    const phone = form.phone?.value?.trim();
+                    const message = form.message?.value?.trim();
+                    if (!name || !email || !message) return;
+                    setStatus("sending");
+                    setErrorDetail("");
+                    try {
+                      const res = await fetch("/api/contact", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name, email, phone, message }),
+                      });
+                      const data = await res.json().catch(() => ({}));
+                      if (res.ok) {
+                        setStatus("success");
+                        form.reset();
+                      } else {
+                        setStatus("error");
+                        setErrorDetail(data.error || texts.errorMessage);
+                      }
+                    } catch {
+                      setStatus("error");
+                      setErrorDetail(texts.errorMessage);
+                    }
+                  }}
                 >
                   <div className="row gx-4">
                     <div className="col-lg-6 col-md-6 mb10">
@@ -132,16 +164,21 @@ const page = () => {
                     <input
                       type="submit"
                       id="send_message"
-                      defaultValue={texts.submitButton}
+                      value={status === "sending" ? (language === "tr" ? "Gönderiliyor…" : "Sending…") : texts.submitButton}
                       className="btn-main btn-line"
+                      disabled={status === "sending"}
                     />
                   </div>
-                  <div id="success_message" className="success">
-                    {texts.successMessage}
-                  </div>
-                  <div id="error_message" className="error">
-                    {texts.errorMessage}
-                  </div>
+                  {status === "success" && (
+                    <div id="success_message" className="success mt20">
+                      {texts.successMessage}
+                    </div>
+                  )}
+                  {status === "error" && (
+                    <div id="error_message" className="error mt20">
+                      {errorDetail || texts.errorMessage}
+                    </div>
+                  )}
                 </form>
               </div>
             </div>
