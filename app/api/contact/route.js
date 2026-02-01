@@ -123,6 +123,14 @@ export async function POST(request) {
     const host = process.env.SMTP_HOST;
     const port = Number(process.env.SMTP_PORT) || 587;
     const useSecure = process.env.SMTP_SECURE === "true";
+    const tlsLegacy = (process.env.SMTP_TLS_LEGACY || "").toLowerCase() === "true";
+    const tlsOpts = {
+      rejectUnauthorized: false,
+      servername: host,
+      ...(tlsLegacy
+        ? { secureProtocol: "TLSv1_method", maxVersion: "TLSv1" }
+        : { minVersion: "TLSv1", maxVersion: "TLSv1.3" }),
+    };
     const transporter = nodemailer.createTransport({
       host,
       port,
@@ -131,12 +139,7 @@ export async function POST(request) {
       ignoreTLS: false,
       connectionTimeout: 15000,
       greetingTimeout: 10000,
-      tls: {
-        rejectUnauthorized: false,
-        servername: host,
-        minVersion: "TLSv1",
-        maxVersion: "TLSv1.3",
-      },
+      tls: tlsOpts,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
