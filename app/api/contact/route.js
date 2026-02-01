@@ -120,19 +120,23 @@ export async function POST(request) {
       );
     }
 
+    const host = process.env.SMTP_HOST;
     const port = Number(process.env.SMTP_PORT) || 587;
     const useSecure = process.env.SMTP_SECURE === "true";
-    const ignoreTLSEnv = (process.env.SMTP_IGNORE_TLS || "").toLowerCase();
-    const ignoreTLS = ignoreTLSEnv === "true" || ignoreTLSEnv === "1" || port === 25;
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
+      host,
       port,
       secure: useSecure,
-      requireTLS: false,
-      ignoreTLS,
+      requireTLS: port === 587 && !useSecure,
+      ignoreTLS: false,
       connectionTimeout: 15000,
       greetingTimeout: 10000,
-      tls: { rejectUnauthorized: false },
+      tls: {
+        rejectUnauthorized: false,
+        servername: host,
+        minVersion: "TLSv1",
+        maxVersion: "TLSv1.3",
+      },
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -158,7 +162,7 @@ export async function POST(request) {
     ].join("");
 
     const plainOnlyEnv = (process.env.SMTP_PLAIN_ONLY || "").toLowerCase();
-    const usePlainOnly = plainOnlyEnv !== "false" && (plainOnlyEnv === "true" || plainOnlyEnv === "1" || port === 587);
+    const usePlainOnly = plainOnlyEnv === "true" || plainOnlyEnv === "1";
     if (usePlainOnly) {
       await sendPlainSMTP({
         host: process.env.SMTP_HOST,
