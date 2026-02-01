@@ -98,6 +98,7 @@ function loadEnvLocal() {
 
 export async function POST(request) {
   try {
+    loadEnvLocal();
     const body = await request.json();
     const { name, email, phone, message } = body;
 
@@ -106,10 +107,6 @@ export async function POST(request) {
         { error: "Ad, e-posta ve mesaj zorunludur." },
         { status: 400 }
       );
-    }
-
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      loadEnvLocal();
     }
     const hasSmtp =
       process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
@@ -160,7 +157,8 @@ export async function POST(request) {
       "<p>" + escapeHtml(message.trim()).replace(/\n/g, "<br>") + "</p>",
     ].join("");
 
-    const usePlainOnly = (process.env.SMTP_PLAIN_ONLY || "").toLowerCase() === "true";
+    const plainOnlyEnv = (process.env.SMTP_PLAIN_ONLY || "").toLowerCase();
+    const usePlainOnly = plainOnlyEnv !== "false" && (plainOnlyEnv === "true" || plainOnlyEnv === "1" || port === 587);
     if (usePlainOnly) {
       await sendPlainSMTP({
         host: process.env.SMTP_HOST,
