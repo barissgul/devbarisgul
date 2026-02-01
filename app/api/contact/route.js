@@ -58,11 +58,15 @@ export async function POST(request) {
 
     const port = Number(process.env.SMTP_PORT) || 587;
     const useSecure = process.env.SMTP_SECURE === "true";
+    const ignoreTLS = process.env.SMTP_IGNORE_TLS === "true";
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port,
       secure: useSecure,
-      requireTLS: !useSecure && port === 587,
+      requireTLS: false,
+      ignoreTLS,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
       tls: { rejectUnauthorized: false },
       auth: {
         user: process.env.SMTP_USER,
