@@ -15,10 +15,17 @@ export async function POST(request) {
       );
     }
 
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error("SMTP ayarları eksik: SMTP_HOST, SMTP_USER, SMTP_PASS");
+    const hasSmtp =
+      process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
+    if (!hasSmtp) {
+      console.error(
+        "SMTP ayarları eksik. Yerelde: .env.local var mı? Sunucuyu yeniden başlattınız mı (npm run dev)? Canlıda: DigitalOcean ortam değişkenleri tanımlı mı?"
+      );
       return NextResponse.json(
-        { error: "E-posta sunucusu yapılandırılmamış." },
+        {
+          error:
+            "E-posta sunucusu yapılandırılmamış. Yerelde .env.local dosyası var ve sunucuyu yeniden başlattıysanız; canlıda (DigitalOcean) ortam değişkenlerini ekleyin: SMTP_HOST, SMTP_USER, SMTP_PASS.",
+        },
         { status: 503 }
       );
     }
