@@ -132,19 +132,18 @@ export async function POST(request) {
         : { minVersion: "TLSv1", maxVersion: "TLSv1.3" }),
     };
     const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: useSecure,
-      requireTLS: port === 587 && !useSecure,
-      ignoreTLS: false,
-      connectionTimeout: 15000,
-      greetingTimeout: 10000,
-      tls: tlsOpts,
+      host: "mail.devbarisgul.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
-    });
+      tls: {
+        minVersion: "TLSv1.2",
+        rejectUnauthorized: true,
+      },
+    });    
 
     const subject = `İletişim formu: ${name.trim()}`;
     const textBody = [
