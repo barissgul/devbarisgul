@@ -6,10 +6,13 @@ import NathanLayout from "@/layouts/NathanLayout";
 import { menus, rootElements } from "@/utility/data";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const page = () => {
   const { language } = useLanguage();
-  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+  const [status, setStatus] = useState("idle");
   const [errorDetail, setErrorDetail] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({ email: "" });
 
   const content = {
     en: {
@@ -24,8 +27,9 @@ const page = () => {
       messageLabel: "Message",
       messagePlaceholder: "Your Message",
       submitButton: "Send Message",
-      successMessage: "Your message has been sent successfully. Refresh this page if you want to send more messages.",
+      successMessage: "Your message has been sent successfully. I'll get back to you as soon as possible.",
       errorMessage: "Sorry there was an error sending your form.",
+      emailInvalid: "Please enter a valid email address.",
     },
     tr: {
       title: "İletişim",
@@ -39,12 +43,18 @@ const page = () => {
       messageLabel: "Mesaj",
       messagePlaceholder: "Mesajınız",
       submitButton: "Mesaj Gönder",
-      successMessage: "Mesajınız başarıyla gönderildi. Daha fazla mesaj göndermek isterseniz bu sayfayı yenileyin.",
+      successMessage: "Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağım.",
       errorMessage: "Üzgünüm, formunuzu gönderirken bir hata oluştu.",
+      emailInvalid: "Geçerli bir e-posta adresi girin.",
     },
   };
 
   const texts = content[language] || content.en;
+
+  const validateEmail = (value) => {
+    if (!value?.trim()) return "";
+    return EMAIL_REGEX.test(value.trim()) ? "" : texts.emailInvalid;
+  };
 
   return (
     <NathanLayout
@@ -83,7 +93,10 @@ const page = () => {
                     const email = form.Email?.value?.trim();
                     const phone = form.phone?.value?.trim();
                     const message = form.message?.value?.trim();
+                    const emailErr = validateEmail(email);
+                    setFieldErrors({ email: emailErr });
                     if (!name || !email || !message) return;
+                    if (emailErr) return;
                     setStatus("sending");
                     setErrorDetail("");
                     try {
@@ -122,13 +135,18 @@ const page = () => {
                       <div className="field-set">
                         <span className="d-label fw-bold">{texts.emailLabel}</span>
                         <input
-                          type="text"
+                          type="email"
                           name="Email"
                           id="email"
-                          className="form-control no-border"
+                          className={`form-control no-border ${fieldErrors.email ? "border-danger" : ""}`}
                           placeholder={texts.emailPlaceholder}
                           required
+                          onBlur={(e) => setFieldErrors((prev) => ({ ...prev, email: validateEmail(e.target.value) }))}
+                          onChange={() => fieldErrors.email && setFieldErrors((prev) => ({ ...prev, email: validateEmail(document.getElementById("email")?.value) }))}
                         />
+                        {fieldErrors.email && (
+                          <span className="d-block mt-1 small text-danger">{fieldErrors.email}</span>
+                        )}
                       </div>
                       <div className="field-set">
                         <span className="d-label fw-bold">{texts.phoneLabel}</span>
@@ -170,13 +188,23 @@ const page = () => {
                     />
                   </div>
                   {status === "success" && (
-                    <div id="success_message" className="success mt20">
-                      {texts.successMessage}
+                    <div
+                      id="success_message"
+                      className="mt20 p-3 rounded"
+                      style={{ borderLeft: "4px solid #198754", background: "rgba(25, 135, 84, 0.1)", color: "#0f5132" }}
+                      role="alert"
+                    >
+                      <strong>{language === "tr" ? "Gönderildi" : "Sent"}</strong> — {texts.successMessage}
                     </div>
                   )}
                   {status === "error" && (
-                    <div id="error_message" className="error mt20">
-                      {errorDetail || texts.errorMessage}
+                    <div
+                      id="error_message"
+                      className="mt20 p-3 rounded"
+                      style={{ borderLeft: "4px solid #dc3545", background: "rgba(220, 53, 69, 0.1)", color: "#842029" }}
+                      role="alert"
+                    >
+                      <strong>{language === "tr" ? "Hata" : "Error"}</strong> — {errorDetail || texts.errorMessage}
                     </div>
                   )}
                 </form>
