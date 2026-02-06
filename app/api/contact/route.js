@@ -181,7 +181,6 @@ export async function POST(request) {
     await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER || toEmail,
       to: toEmail,
-      replyTo: email.trim(),
       subject,
       text: [
         `İsim: ${name.trim()}`,
