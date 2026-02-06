@@ -4,7 +4,7 @@ import path from "path";
 import { readFileSync, existsSync } from "fs";
 import net from "net";
 
-const TO_EMAIL_DEFAULT = "site@devbarisgul.com";
+const TO_EMAIL_DEFAULT = "info@devbarisgul.com";
 
 function sendPlainSMTP(options) {
   return new Promise((resolve, reject) => {

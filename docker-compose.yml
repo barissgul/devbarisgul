@@ -1,0 +1,20 @@
+# devbarisgul - Docker Compose
+# Sunucuda: .env dosyasını oluşturup SMTP bilgilerini yazın (veya aşağıdaki environment'ı düzenleyin)
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      # İletişim formu mailleri bu adrese gider:
+      - CONTACT_TO_EMAIL=${CONTACT_TO_EMAIL:-info@devbarisgul.com}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM=${SMTP_FROM:-${SMTP_USER}}
+      - SMTP_PLAIN_ONLY=${SMTP_PLAIN_ONLY:-true}
+    restart: unless-stopped
