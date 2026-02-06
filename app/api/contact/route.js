@@ -108,6 +108,14 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+    const emailTrimmed = email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailTrimmed)) {
+      return NextResponse.json(
+        { error: "Geçerli bir e-posta adresi girin." },
+        { status: 400 }
+      );
+    }
     const toEmail = process.env.CONTACT_TO_EMAIL || TO_EMAIL_DEFAULT;
     const hasSmtp =
       process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
@@ -123,33 +131,25 @@ export async function POST(request) {
 
     const host = process.env.SMTP_HOST;
     const port = Number(process.env.SMTP_PORT) || 587;
-    const useSecure = process.env.SMTP_SECURE === "true";
-    const tlsLegacy = (process.env.SMTP_TLS_LEGACY || "").toLowerCase() === "true";
-    const tlsOpts = {
-      rejectUnauthorized: false,
-      servername: host,
-      ...(tlsLegacy
-        ? { secureProtocol: "TLSv1_method", maxVersion: "TLSv1" }
-        : { minVersion: "TLSv1", maxVersion: "TLSv1.3" }),
-    };
+    const secure = process.env.SMTP_SECURE === "true";
+    const isGmail = host === "smtp.gmail.com";
     const transporter = nodemailer.createTransport({
-      host: "mail.devbarisgul.com",
-      port: 465,
-      secure: true,
+      host,
+      port,
+      secure: isGmail ? false : secure,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
       tls: {
-        minVersion: "TLSv1.2",
-        rejectUnauthorized: true,
+        rejectUnauthorized: !(process.env.SMTP_IGNORE_TLS === "true"),
       },
     });    
 
     const subject = `İletişim formu: ${name.trim()}`;
     const textBody = [
       `İsim: ${name.trim()}`,
-      `E-posta: ${email.trim()}`,
+      `E-posta: ${emailTrimmed}`,
       `Telefon: ${phone || "-"}`,
       "",
       "Mesaj:",
@@ -158,7 +158,7 @@ export async function POST(request) {
     const htmlContent = [
       "<h2>Yeni iletişim formu mesajı</h2>",
       "<p><strong>İsim:</strong> " + escapeHtml(name.trim()) + "</p>",
-      "<p><strong>E-posta:</strong> " + escapeHtml(email.trim()) + "</p>",
+      "<p><strong>E-posta:</strong> " + escapeHtml(emailTrimmed) + "</p>",
       "<p><strong>Telefon:</strong> " + escapeHtml(phone || "-") + "</p>",
       "<p><strong>Mesaj:</strong></p>",
       "<p>" + escapeHtml(message.trim()).replace(/\n/g, "<br>") + "</p>",
@@ -184,7 +184,7 @@ export async function POST(request) {
       subject,
       text: [
         `İsim: ${name.trim()}`,
-        `E-posta: ${email.trim()}`,
+        `E-posta: ${emailTrimmed}`,
         `Telefon: ${phone || "-"}`,
         "",
         "Mesaj:",
